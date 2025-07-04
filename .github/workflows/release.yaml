@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags: ["*"]
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        registry-url: 'https://registry.npmjs.org'
+        cache: 'pnpm'
+
+    - name: Install dependencies
+      run: pnpm install
+
+    - name: Extract version from tag
+      id: extract_version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/v}
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+    - name: Build
+      run: |
+        ./build.sh
+        tar -czf novnc-${{ steps.extract_version.outputs.VERSION }}.tar.gz -C build .
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.extract_version.outputs.TAG_NAME }}
+        draft: false
+        prerelease: false
+        files: |
+          novnc-${{ steps.extract_version.outputs.VERSION }}.tar.gz
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: novnc-${{ steps.extract_version.outputs.VERSION }}
+        path: novnc-${{ steps.extract_version.outputs.VERSION }}.tar.gz
+        retention-days: 30
+
+    - name: Summary
+      run: |
+        echo "## 🎉 Release Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+        echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+        echo "| **Version** | \`${{ steps.extract_version.outputs.VERSION }}\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Tag** | \`${{ steps.extract_version.outputs.TAG_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Commit** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Archive** | \`novnc-${{ steps.extract_version.outputs.VERSION }}.tar.gz\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Size** | \`$(ls -lh novnc-${{ steps.extract_version.outputs.VERSION }}.tar.gz | awk '{print $5}')\` |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📋 Download Links" >> $GITHUB_STEP_SUMMARY
+        echo "- [Release Page](https://github.com/${{ github.repository }}/releases/tag/${{ steps.extract_version.outputs.TAG_NAME }})" >> $GITHUB_STEP_SUMMARY
+        echo "- [Direct Download](https://github.com/${{ github.repository }}/releases/download/${{ steps.extract_version.outputs.TAG_NAME }}/novnc-${{ steps.extract_version.outputs.VERSION }}.tar.gz)" >> $GITHUB_STEP_SUMMARY

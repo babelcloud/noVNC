@@ -1,6 +1,6 @@
 {
   "name": "@novnc/novnc",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "An HTML5 VNC client",
   "browser": "lib/rfb",
   "directories": {
@@ -35,6 +35,7 @@
     "url": "https://github.com/novnc/noVNC/issues"
   },
   "homepage": "https://github.com/novnc/noVNC",
+  "packageManager": "pnpm@10.12.4",
   "devDependencies": {
     "@babel/core": "latest",
     "@babel/preset-env": "latest",

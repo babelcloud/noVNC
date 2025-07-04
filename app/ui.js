@@ -84,21 +84,9 @@ const UI = {
             UI.showStatus(_("Running without HTTPS is not recommended, crashes or other issues are likely."), 'error');
         }
 
-        // Try to fetch version number
-        try {
-            let response = await fetch('./package.json');
-            if (!response.ok) {
-                throw Error("" + response.status + " " + response.statusText);
-            }
-
-            let packageInfo = await response.json();
-            Array.from(document.getElementsByClassName('noVNC_version')).forEach(el => el.innerText = packageInfo.version);
-        } catch (err) {
-            Log.Error("Couldn't fetch package.json: " + err);
-            Array.from(document.getElementsByClassName('noVNC_version_wrapper'))
-                .concat(Array.from(document.getElementsByClassName('noVNC_version_separator')))
-                .forEach(el => el.style.display = 'none');
-        }
+        // Display hardcoded version number
+        const version = '4cb5aa4-fork';
+        Array.from(document.getElementsByClassName('noVNC_version')).forEach(el => el.innerText = version);
 
         // Adapt the interface for touch screen devices
         if (isTouchDevice) {

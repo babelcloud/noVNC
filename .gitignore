@@ -6,7 +6,11 @@ utils/websockify
 /node_modules
 /build
 /lib
+/dist
 recordings
 *.swp
 *~
+novnc.tar.gz
 noVNC-*.tgz
+novnc-*.tar.gz
+release_notes.md
