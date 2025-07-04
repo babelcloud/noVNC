@@ -185,7 +185,10 @@ const UI = {
         UI.initSetting('bell', 'on');
         UI.initSetting('view_only', false);
         UI.initSetting('show_dot', false);
-        UI.initSetting('path', 'websockify');
+        // Set path based on current request path + /ws, ignore query parameters
+        const currentPath = window.location.pathname;
+        const fixedPath = currentPath.endsWith('/') ? currentPath + 'ws' : currentPath + '/ws';
+        UI.forceSetting('path', fixedPath);
         UI.initSetting('repeaterID', '');
         UI.initSetting('reconnect', false);
         UI.initSetting('reconnect_delay', 5000);
@@ -356,7 +359,6 @@ const UI = {
         document.getElementById("noVNC_settings_button")
             .addEventListener('click', UI.toggleSettingsPanel);
 
-        UI.addSettingChangeHandler('encrypt');
         UI.addSettingChangeHandler('resize');
         UI.addSettingChangeHandler('resize', UI.applyResizeMode);
         UI.addSettingChangeHandler('resize', UI.updateViewClip);
@@ -371,14 +373,17 @@ const UI = {
         UI.addSettingChangeHandler('view_only', UI.updateViewOnly);
         UI.addSettingChangeHandler('show_dot');
         UI.addSettingChangeHandler('show_dot', UI.updateShowDotCursor);
-        UI.addSettingChangeHandler('host');
-        UI.addSettingChangeHandler('port');
-        UI.addSettingChangeHandler('path');
         UI.addSettingChangeHandler('repeaterID');
         UI.addSettingChangeHandler('logging');
         UI.addSettingChangeHandler('logging', UI.updateLogging);
         UI.addSettingChangeHandler('reconnect');
         UI.addSettingChangeHandler('reconnect_delay');
+
+        // WebSocket settings are hidden and managed automatically
+        // UI.addSettingChangeHandler('encrypt');
+        // UI.addSettingChangeHandler('host');
+        // UI.addSettingChangeHandler('port');
+        // UI.addSettingChangeHandler('path');
     },
 
     addFullscreenHandlers() {
@@ -435,22 +440,27 @@ const UI = {
         if (UI.connected) {
             UI.updateViewClip();
 
-            UI.disableSetting('encrypt');
             UI.disableSetting('shared');
-            UI.disableSetting('host');
-            UI.disableSetting('port');
-            UI.disableSetting('path');
             UI.disableSetting('repeaterID');
+
+            // WebSocket settings are hidden and managed automatically
+            // UI.disableSetting('encrypt');
+            // UI.disableSetting('host');
+            // UI.disableSetting('port');
+            // UI.disableSetting('path');
 
             // Hide the controlbar after 2 seconds
             UI.closeControlbarTimeout = setTimeout(UI.closeControlbar, 2000);
         } else {
-            UI.enableSetting('encrypt');
             UI.enableSetting('shared');
-            UI.enableSetting('host');
-            UI.enableSetting('port');
-            UI.enableSetting('path');
             UI.enableSetting('repeaterID');
+
+            // WebSocket settings are hidden and managed automatically
+            // UI.enableSetting('encrypt');
+            // UI.enableSetting('host');
+            // UI.enableSetting('port');
+            // UI.enableSetting('path');
+
             UI.updatePowerButton();
             UI.keepControlbar();
         }
@@ -880,15 +890,17 @@ const UI = {
         UI.openControlbar();
 
         // Refresh UI elements from saved cookies
-        UI.updateSetting('encrypt');
         UI.updateSetting('view_clip');
         UI.updateSetting('resize');
         UI.updateSetting('quality');
         UI.updateSetting('compression');
         UI.updateSetting('shared');
         UI.updateSetting('view_only');
-        UI.updateSetting('path');
         UI.updateSetting('repeaterID');
+
+        // UI.updateSetting('encrypt');
+        // UI.updateSetting('path');
+
         UI.updateSetting('logging');
         UI.updateSetting('reconnect');
         UI.updateSetting('reconnect_delay');
