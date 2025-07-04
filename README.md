@@ -226,3 +226,8 @@ that list and you think you should be, feel free to send a PR to fix that.
 Do you want to be on this list? Check out our
 [contribution guide](https://github.com/novnc/noVNC/wiki/Contributing) and
 start hacking!
+
+
+## Fork Changes
+
+[Changelog](./FORK_CHANGES.md)
