@@ -79,10 +79,10 @@ const UI = {
 
         // We rely on modern APIs which might not be available in an
         // insecure context
-        if (!window.isSecureContext) {
-            // FIXME: This gets hidden when connecting
-            UI.showStatus(_("Running without HTTPS is not recommended, crashes or other issues are likely."), 'error');
-        }
+        // if (!window.isSecureContext) {
+        //     // FIXME: This gets hidden when connecting
+        //     UI.showStatus(_("Running without HTTPS is not recommended, crashes or other issues are likely."), 'error');
+        // }
 
         // Display hardcoded version number
         const version = '4cb5aa4-fork';
